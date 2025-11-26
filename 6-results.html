@@ -15,12 +15,24 @@
             </div>
         </header>
 
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+        <script>
+            // Fire confetti when page loads
+            window.onload = () => {
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: { y: 0.6 },
+                });
+            };
+        </script>
+
         <main class="container">
-            <h2>Well done!</h2>
-            Team: <span id="teamName">Team Name</span>
-            <br />
-            Total Time: <span id="finalTime"></span>
-            <br />
+            <h1 style="font-size: 3em; color: #004c97; text-align: center">🎉 Congratulations! 🎉</h1>
+            <div style="max-width: 500px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); text-align: center">
+                <h2>Team: <span id="teamName"></span></h2>
+                <h3>Total Time: <span id="finalTime"></span></h3>
+            </div>
         </main>
 
         <footer>&copy; ZF Friedrichshafen AG</footer>
