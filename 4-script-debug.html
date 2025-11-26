@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>ZF Coding Puzzle</title>
         <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
         <script src="script.js"></script>
     </head>
     <body>
@@ -23,9 +25,20 @@
         </header>
 
         <main class="container">
-            <h2>Task description goes here</h2>
+            <h2>This java code has an error. Find it and enter the correct result from the code.</h2>
 
-            task goes here
+            <pre><code class="language-java">
+                public class DebugZF {
+                    public static void main (String[] args)  {
+                        int[] gears = {12, 24, 36, 48};
+                        int ratio = 0;
+                        for (int i = 1; i <= gears.length; i++) {
+                            ratio += gears[i] / gears[0];
+                        }
+                        System.out.println(ratio);
+                    }
+                }
+            </code></pre>
 
             <input type="number" id="answer" placeholder="Enter answer here" />
             <br />
@@ -40,7 +53,7 @@
         <script>
             function checkCompletion() {
                 const userAnswer = parseFloat(document.getElementById('answer').value);
-                const correctAnswer = (36 / 12) * (45 / 15); // 3 * 3 = 9
+                const correctAnswer = 24 / 12 + 36 / 12 + 48 / 12; // 2 + 3 + 4 = 9
                 const statusElement = document.getElementById('status');
 
                 if (userAnswer === correctAnswer) {
@@ -51,7 +64,7 @@
                 }
             }
 
-            const hints = ['Hint 1: Ratio = Follower ÷ Driver', 'Hint 2: Smaller gears usually do the driving', 'Hint 3: Total ratio = ratioA × ratioB'];
+            const hints = ['Hint 1: Error is in line 5', 'Hint 2: since gears[0] is always the divider, you have to use i < gears.length in the loop condition. ', 'Hint 3: 24 / 12 + 36 / 12 + 48 / 12'];
             let hintIndex = 0;
 
             function showHint() {

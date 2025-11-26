@@ -17,16 +17,32 @@
 
         <main class="container">
             <h2>Well done!</h2>
-            Total Time: <span id="totalTime">0:00</span>
+            Team: <span id="teamName">Team Name</span>
+            <br />
+            Total Time: <span id="finalTime"></span>
             <br />
         </main>
 
         <footer>&copy; ZF Friedrichshafen AG</footer>
 
         <script>
-            let puzzleStart = Date.now();
-            const alertSound = new Audio('assets/alert.mp3');
-            let alertPlayed = false;
+            // Get stored values
+            const name = localStorage.getItem('teamName') || 'Unknown Team';
+            const start = parseInt(localStorage.getItem('startTime')) || Date.now();
+            const penalty = parseInt(localStorage.getItem('penalty')) || 0;
+
+            // Calculate elapsed time
+            const now = Date.now();
+            const elapsedSeconds = Math.floor((now - start) / 1000) + penalty * 60;
+
+            // Format time
+            const mins = Math.floor(elapsedSeconds / 60);
+            const secs = elapsedSeconds % 60;
+            const formattedTime = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+            // Display
+            document.getElementById('teamName').textContent = name;
+            document.getElementById('finalTime').textContent = formattedTime;
         </script>
     </body>
 </html>

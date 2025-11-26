@@ -6,6 +6,23 @@
         <title>ZF Rubik's Puzzle</title>
         <link rel="stylesheet" href="style.css" />
         <script src="script.js"></script>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+            canvas {
+                display: block;
+            }
+            #controls {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: rgba(255, 255, 255, 0.8);
+                padding: 10px;
+                border-radius: 8px;
+            }
+        </style>
     </head>
     <body>
         <header>
@@ -23,12 +40,9 @@
         </header>
 
         <main class="container">
-            <h2>Task description goes here</h2>
-
-            task goes here
-
-            <input type="number" id="answer" placeholder="Enter answer here" />
-            <br />
+            <h2>Solve this Rubik's cube</h2>
+            <img src="assets/rubiks-cube.gif" alt="Rubik's Cube Animation" />
+            <input type="text" id="answer" placeholder="Enter 'done' here when done" />
             <button onclick="checkCompletion()">Submit</button>
             <button class="hint-btn" onclick="showHint()">Hint (+1 min)</button>
             <button class="next-btn" id="nextBtn" style="display: none" onclick="goToResults()">Next Puzzle</button>
@@ -39,19 +53,19 @@
 
         <script>
             function checkCompletion() {
-                const userAnswer = parseFloat(document.getElementById('answer').value);
-                const correctAnswer = (36 / 12) * (45 / 15); // 3 * 3 = 9
+                const userAnswer = document.getElementById('answer').value;
+                const correctAnswer = 'done'; // 3 * 3 = 9
                 const statusElement = document.getElementById('status');
 
                 if (userAnswer === correctAnswer) {
-                    statusElement.textContent = '✅ Correct! You can proceed.';
+                    statusElement.textContent = '✅ Well done! You can proceed.';
                     document.getElementById('nextBtn').style.display = 'inline-block';
                 } else {
                     statusElement.textContent = '❌ Incorrect. Try again!';
                 }
             }
 
-            const hints = ['Hint 1: Ratio = Follower ÷ Driver', 'Hint 2: Smaller gears usually do the driving', 'Hint 3: Total ratio = ratioA × ratioB'];
+            const hints = ['Hint 1: first scan and next 2 steps', 'Hint 2: second scan and next 2 steps', 'Hint 3: third scan and next 2 steps'];
             let hintIndex = 0;
 
             function showHint() {

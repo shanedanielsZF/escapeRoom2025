@@ -23,11 +23,14 @@
         </header>
 
         <main class="container">
-            <h2>Task description goes here</h2>
+            <h2>Fill in the full names of famous Hungarian inventors to find letters for the next step.</h2>
 
-            task goes here
-
-            <input type="number" id="answer" placeholder="Enter answer here" />
+            1. You might be a "stréber" if you use my invention. (1st Letter)<br />
+            2. You can "count" on my invention. (5th letter)<br />
+            3. My invention was quite "electric" and "moving" (8th letter)<br />
+            4. I would write to you with my invention, but I'm dead. (9th letter)<br />
+            5. Too much watching my invention will rot your brain. (8th letter)<br />
+            <input type="text" id="answer" placeholder="Enter answer here" />
             <br />
             <button onclick="checkCompletion()">Submit</button>
             <button class="hint-btn" onclick="showHint()">Hint (+1 min)</button>
@@ -39,8 +42,8 @@
 
         <script>
             function checkCompletion() {
-                const userAnswer = parseFloat(document.getElementById('answer').value);
-                const correctAnswer = (36 / 12) * (45 / 15); // 3 * 3 = 9
+                const userAnswer = document.getElementById('answer').value;
+                const correctAnswer = 'drivE';
                 const statusElement = document.getElementById('status');
 
                 if (userAnswer === correctAnswer) {
@@ -51,7 +54,7 @@
                 }
             }
 
-            const hints = ['Hint 1: Ratio = Follower ÷ Driver', 'Hint 2: Smaller gears usually do the driving', 'Hint 3: Total ratio = ratioA × ratioB'];
+            const hints = ['Hint 1: case matters', 'Hint 2: inventions are Rubiks cube, Computer, electric motor, ballpoint pen and television.', 'Hint 3: Ernő Rubik, John von Neumann, Ányos Jedlik, László Bíró, Kálmán Tihanyi'];
             let hintIndex = 0;
 
             function showHint() {
