@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ZF Results</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="header-left"><img src="assets/zf-logo.png" alt="ZF Logo" class="logo" /></div>
+            <div class="header-center">
+                <h1>Results</h1>
+            </div>
+        </header>
+
+        <main class="container">
+            <h2>Well done!</h2>
+            Total Time: <span id="totalTime">0:00</span>
+            <br />
+        </main>
+
+        <footer>&copy; ZF Friedrichshafen AG</footer>
+
+        <script>
+            let puzzleStart = Date.now();
+            const alertSound = new Audio('assets/alert.mp3');
+            let alertPlayed = false;
+        </script>
+    </body>
+</html>

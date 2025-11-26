@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ZF Timeline Puzzle</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="header-left"><img src="assets/zf-logo.png" alt="ZF Logo" class="logo" /></div>
+            <div class="header-center">
+                <h1>Timeline Puzzle</h1>
+                <div class="timers">
+                    Total Time: <span id="totalTime">0:00</span> | Puzzle Time: <span id="puzzleTime">0:00</span>
+                    <button id="resetTimerBtn" style="margin-left: 15px; padding: 5px 10px; font-size: 12px">Reset Timer</button>
+                </div>
+                <div class="progress-container">
+                    <div id="timeProgress"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <h2>Arrange ZF's milestones in the correct order!</h2>
+            <p>Drag the event cards into the timeline slots from 1915 to 2020s.</p>
+
+            <div class="timeline-container">
+                <!-- Timeline slots -->
+                <div class="timeline" id="timeline">
+                    <div class="drop-zone" data-year="1915">1915</div>
+                    <div class="drop-zone" data-year="1920s">1920s</div>
+                    <div class="drop-zone" data-year="1930s">1930s</div>
+                    <div class="drop-zone" data-year="1940s">1940s</div>
+                    <div class="drop-zone" data-year="1950s">1950s</div>
+                    <div class="drop-zone" data-year="1960s">1960s</div>
+                    <div class="drop-zone" data-year="1970s">1970s</div>
+                    <div class="drop-zone" data-year="1980s">1980s</div>
+                    <div class="drop-zone" data-year="1990s">1990s</div>
+                    <div class="drop-zone" data-year="2000s">2000s</div>
+                    <div class="drop-zone" data-year="2010s">2010s</div>
+                    <div class="drop-zone" data-year="2020s">2020s</div>
+                </div>
+
+                <!-- Event cards container -->
+                <div class="events" id="events"></div>
+            </div>
+
+            <button class="hint-btn" onclick="showHint()">Hint (+1 min)</button>
+            <button class="next-btn" id="nextBtn" style="display: none" onclick="goToGearRatio()">Next Puzzle</button>
+            <p id="status" style="margin-top: 15px; font-weight: bold; color: #004c97"></p>
+        </main>
+
+        <footer>&copy; ZF Friedrichshafen AG</footer>
+
+        <script>
+            const eventsData = [
+                { year: '1915', text: 'ZF founded in Germany' },
+                { year: '1920s', text: 'First gearboxes produced for cars' },
+                { year: '1930s', text: 'ZF branches into steering systems' },
+                { year: '1940s', text: 'Only one employee remained in Friedrichshafen plant' },
+                { year: '1950s', text: 'ZF asynchronization introduced for buses/trucks' },
+                { year: '1960s', text: 'Automatic transmissions introduced' },
+                { year: '1970s', text: 'ZF North America founded' },
+                { year: '1980s', text: 'Servotronic introduced' },
+                { year: '1990s', text: 'Expansion into electronic systems' },
+                { year: '2000s', text: 'EcoLife bus transmission presented' },
+                { year: '2010s', text: 'Acquisition of TRW Automotive' },
+                { year: '2020s', text: 'Focus on electric mobility & autonomous driving' },
+            ];
+
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            const eventsContainer = document.getElementById('events');
+            const shuffledEvents = shuffle(eventsData);
+
+            shuffledEvents.forEach((event) => {
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                card.draggable = true;
+                card.dataset.year = event.year;
+                card.textContent = event.text;
+                eventsContainer.appendChild(card);
+            });
+
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let draggedCard = null;
+
+            document.querySelectorAll('.event-card').forEach((card) => {
+                card.addEventListener('dragstart', () => {
+                    draggedCard = card;
+                });
+            });
+
+            dropZones.forEach((zone) => {
+                zone.addEventListener('dragover', (e) => e.preventDefault());
+                zone.addEventListener('drop', () => {
+                    if (draggedCard) {
+                        if (!zone.querySelector('.event-card')) {
+                            zone.appendChild(draggedCard);
+                            draggedCard = null;
+                            checkCompletion();
+                        } else {
+                            alert('This slot is already occupied! Move the card back first.');
+                        }
+                    }
+                });
+            });
+
+            eventsContainer.addEventListener('dragover', (e) => e.preventDefault());
+            eventsContainer.addEventListener('drop', () => {
+                if (draggedCard) {
+                    eventsContainer.appendChild(draggedCard);
+                    draggedCard = null;
+                    checkCompletion();
+                }
+            });
+
+            function checkCompletion() {
+                let remaining = 0;
+                dropZones.forEach((zone) => {
+                    const card = zone.querySelector('.event-card');
+                    if (!card || card.dataset.year !== zone.dataset.year) {
+                        remaining++;
+                    }
+                });
+
+                const statusElement = document.getElementById('status');
+                if (remaining === 0) {
+                    statusElement.textContent = '✅ All correct! You can proceed.';
+                    document.getElementById('nextBtn').style.display = 'inline-block';
+                } else {
+                    statusElement.textContent = `You have ${remaining} slots remaining to fill correctly.`;
+                    document.getElementById('nextBtn').style.display = 'none';
+                }
+            }
+
+            function showHint() {
+                addPenalty(1);
+                const wrongZone = Array.from(dropZones).find((zone) => {
+                    const card = zone.querySelector('.event-card');
+                    return card && card.dataset.year !== zone.dataset.year;
+                });
+                if (wrongZone) {
+                    alert(`Hint: The event in ${wrongZone.dataset.year} is incorrect. Correct year: ${wrongZone.querySelector('.event-card').dataset.year}`);
+                } else {
+                    alert('All correct already!');
+                }
+            }
+
+            let puzzleStart = Date.now();
+            const alertSound = new Audio('assets/alert.mp3');
+            let alertPlayed = false;
+        </script>
+    </body>
+</html>

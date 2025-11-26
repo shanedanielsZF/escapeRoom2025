@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ZF Rubik's Puzzle</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="header-left"><img src="assets/zf-logo.png" alt="ZF Logo" class="logo" /></div>
+            <div class="header-center">
+                <h1>Rubik's Puzzle</h1>
+                <div class="timers">
+                    Total Time: <span id="totalTime">0:00</span> | Puzzle Time: <span id="puzzleTime">0:00</span>
+                    <button id="resetTimerBtn" style="margin-left: 15px; padding: 5px 10px; font-size: 12px">Reset Timer</button>
+                </div>
+                <div class="progress-container">
+                    <div id="timeProgress"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <h2>Task description goes here</h2>
+
+            task goes here
+
+            <input type="number" id="answer" placeholder="Enter answer here" />
+            <br />
+            <button onclick="checkCompletion()">Submit</button>
+            <button class="hint-btn" onclick="showHint()">Hint (+1 min)</button>
+            <button class="next-btn" id="nextBtn" style="display: none" onclick="goToResults()">Next Puzzle</button>
+            <p id="status" style="margin-top: 15px; font-weight: bold; color: #004c97"></p>
+        </main>
+
+        <footer>&copy; ZF Friedrichshafen AG</footer>
+
+        <script>
+            function checkCompletion() {
+                const userAnswer = parseFloat(document.getElementById('answer').value);
+                const correctAnswer = (36 / 12) * (45 / 15); // 3 * 3 = 9
+                const statusElement = document.getElementById('status');
+
+                if (userAnswer === correctAnswer) {
+                    statusElement.textContent = '✅ Correct! You can proceed.';
+                    document.getElementById('nextBtn').style.display = 'inline-block';
+                } else {
+                    statusElement.textContent = '❌ Incorrect. Try again!';
+                }
+            }
+
+            const hints = ['Hint 1: Ratio = Follower ÷ Driver', 'Hint 2: Smaller gears usually do the driving', 'Hint 3: Total ratio = ratioA × ratioB'];
+            let hintIndex = 0;
+
+            function showHint() {
+                if (hintIndex < hints.length) {
+                    addPenalty(1);
+                    alert(hints[hintIndex]);
+                    hintIndex++;
+                } else {
+                    alert('No more hints available!');
+                }
+            }
+
+            let puzzleStart = Date.now();
+            const alertSound = new Audio('assets/alert.mp3');
+            let alertPlayed = false;
+        </script>
+    </body>
+</html>
