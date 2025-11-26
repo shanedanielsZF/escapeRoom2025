@@ -7,13 +7,6 @@
         <link rel="stylesheet" href="style.css" />
         <script src="script.js"></script>
         <style>
-            body {
-                margin: 0;
-                overflow: hidden;
-            }
-            canvas {
-                display: block;
-            }
             #controls {
                 position: absolute;
                 top: 10px;
@@ -21,6 +14,27 @@
                 background: rgba(255, 255, 255, 0.8);
                 padding: 10px;
                 border-radius: 8px;
+            }
+
+            .cube-net {
+                display: grid;
+                grid-template-columns: repeat(4, auto);
+                grid-template-rows: repeat(3, auto);
+                gap: 10px;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            .face {
+                display: grid;
+                grid-template-columns: repeat(3, 50px);
+                grid-template-rows: repeat(3, 50px);
+                gap: 2px;
+                border: 2px solid #333;
+            }
+            .cell {
+                width: 50px;
+                height: 50px;
+                border: 1px solid #222;
             }
         </style>
     </head>
@@ -41,7 +55,270 @@
 
         <main class="container">
             <h2>Solve this Rubik's cube</h2>
-            <img src="assets/rubiks-cube.gif" alt="Rubik's Cube Animation" />
+            <!--<img src="assets/rubiks-cube.gif" alt="Rubik's Cube Animation" />-->
+            <p>To complete this puzzle, solve the Rubik's cube and enter 'done' in the input box below.</p>
+            <div class="cube-net">
+                <div></div>
+                <div id="up" class="face"></div>
+                <div></div>
+                <div></div>
+                <div id="left" class="face"></div>
+                <div id="front" class="face"></div>
+                <div id="right" class="face"></div>
+                <div id="back" class="face"></div>
+                <div></div>
+                <div id="down" class="face"></div>
+                <div></div>
+                <div></div>
+            </div>
+
+            <div>
+                <button onclick="move('F')">F</button>
+                <button onclick="move('B')">B</button>
+                <button onclick="move('R')">R</button>
+                <button onclick="move('L')">L</button>
+                <button onclick="move('U')">U</button>
+                <button onclick="move('D')">D</button><br />
+                <button onclick="move('Fprime')">F'</button>
+                <button onclick="move('Bprime')">B'</button>
+                <button onclick="move('Rprime')">R'</button>
+                <button onclick="move('Lprime')">L'</button>
+                <button onclick="move('Uprime')">U'</button>
+                <button onclick="move('Dprime')">D'</button><br />
+                <button onclick="shuffle()">Shuffle</button>
+                <button onclick="resetCube()">Reset</button>
+            </div>
+
+            <script>
+                const colors = { up: 'white', down: 'yellow', front: 'red', back: 'orange', left: 'green', right: 'blue' };
+                let cube;
+
+                function createFace(color) {
+                    return Array.from({ length: 3 }, () => Array(3).fill(color));
+                }
+                function resetCube() {
+                    cube = { up: createFace(colors.up), down: createFace(colors.down), front: createFace(colors.front), back: createFace(colors.back), left: createFace(colors.left), right: createFace(colors.right) };
+                    renderCube();
+                }
+                function renderCube() {
+                    for (let face in cube) {
+                        const div = document.getElementById(face);
+                        div.innerHTML = '';
+                        cube[face].forEach((row) =>
+                            row.forEach((color) => {
+                                const cell = document.createElement('div');
+                                cell.className = 'cell';
+                                cell.style.backgroundColor = color;
+                                div.appendChild(cell);
+                            }),
+                        );
+                    }
+                }
+                function rotateMatrixClockwise(m) {
+                    return m[0].map((_, i) => m.map((r) => r[i]).reverse());
+                }
+                function rotateMatrixClockwise(m) {
+                    return m[0].map((_, i) => m.map((r) => r[i]).reverse());
+                }
+                function rotateMatrixCounterClockwise(m) {
+                    return m[0].map((_, i) => m.map((r) => r[m.length - 1 - i]));
+                }
+                function move(type) {
+                    switch (type) {
+                        case 'F':
+                            rotateFace('front', true);
+                            rotateFront(true);
+                            break;
+                        case 'Fprime':
+                            rotateFace('front', false);
+                            rotateFront(false);
+                            break;
+                        case 'R':
+                            rotateFace('right', true);
+                            rotateRight(true);
+                            break;
+                        case 'Rprime':
+                            rotateFace('right', false);
+                            rotateRight(false);
+                            break;
+                        case 'U':
+                            rotateFace('up', true);
+                            rotateUp(true);
+                            break;
+                        case 'Uprime':
+                            rotateFace('up', false);
+                            rotateUp(false);
+                            break;
+                        case 'L':
+                            rotateFace('left', true);
+                            rotateLeft(true);
+                            break;
+                        case 'Lprime':
+                            rotateFace('left', false);
+                            rotateLeft(false);
+                            break;
+                        case 'D':
+                            rotateFace('down', true);
+                            rotateDown(true);
+                            break;
+                        case 'Dprime':
+                            rotateFace('down', false);
+                            rotateDown(false);
+                            break;
+                        case 'B':
+                            rotateFace('back', true);
+                            rotateBack(true);
+                            break;
+                        case 'Bprime':
+                            rotateFace('back', false);
+                            rotateBack(false);
+                            break;
+                    }
+
+                    renderCube();
+                }
+
+                function rotateFace(face, clockwise) {
+                    cube[face] = clockwise ? rotateMatrixClockwise(cube[face]) : rotateMatrixCounterClockwise(cube[face]);
+                }
+
+                function rotateFront(clockwise) {
+                    const upRow = [...cube.up[2]],
+                        leftCol = cube.left.map((r) => r[2]),
+                        downRow = [...cube.down[0]],
+                        rightCol = cube.right.map((r) => r[0]);
+                    if (clockwise) {
+                        cube.up[2] = leftCol.reverse();
+                        cube.left.forEach((r, i) => (r[2] = downRow[i]));
+                        cube.down[0] = rightCol.reverse();
+                        cube.right.forEach((r, i) => (r[0] = upRow[i]));
+                    } else {
+                        cube.up[2] = rightCol;
+                        cube.right.forEach((r, i) => (r[0] = downRow[2 - i]));
+                        cube.down[0] = leftCol;
+                        cube.left.forEach((r, i) => (r[2] = upRow[2 - i]));
+                    }
+                }
+
+                function rotateRight(clockwise) {
+                    const upCol = cube.up.map((r) => r[2]),
+                        frontCol = cube.front.map((r) => r[2]),
+                        downCol = cube.down.map((r) => r[2]),
+                        backCol = cube.back.map((r) => r[0]);
+                    if (clockwise) {
+                        cube.up.forEach((r, i) => (r[2] = frontCol[i]));
+                        cube.front.forEach((r, i) => (r[2] = downCol[i]));
+                        cube.down.forEach((r, i) => (r[2] = backCol[2 - i]));
+                        cube.back.forEach((r, i) => (r[0] = upCol[2 - i]));
+                    } else {
+                        cube.up.forEach((r, i) => (r[2] = backCol[2 - i]));
+                        cube.back.forEach((r, i) => (r[0] = downCol[2 - i]));
+                        cube.down.forEach((r, i) => (r[2] = frontCol[i]));
+                        cube.front.forEach((r, i) => (r[2] = upCol[i]));
+                    }
+                }
+
+                function rotateLeft(clockwise) {
+                    const upCol = cube.up.map((r) => r[0]),
+                        frontCol = cube.front.map((r) => r[0]),
+                        downCol = cube.down.map((r) => r[0]),
+                        backCol = cube.back.map((r) => r[2]);
+                    if (clockwise) {
+                        cube.up.forEach((r, i) => (r[0] = backCol[2 - i]));
+                        cube.back.forEach((r, i) => (r[2] = downCol[2 - i]));
+                        cube.down.forEach((r, i) => (r[0] = frontCol[i]));
+                        cube.front.forEach((r, i) => (r[0] = upCol[i]));
+                    } else {
+                        cube.up.forEach((r, i) => (r[0] = frontCol[i]));
+                        cube.front.forEach((r, i) => (r[0] = downCol[i]));
+                        cube.down.forEach((r, i) => (r[0] = backCol[2 - i]));
+                        cube.back.forEach((r, i) => (r[2] = upCol[2 - i]));
+                    }
+                }
+
+                function rotateUp(clockwise) {
+                    const frontRow = [...cube.front[0]],
+                        rightRow = [...cube.right[0]],
+                        backRow = [...cube.back[0]],
+                        leftRow = [...cube.left[0]];
+                    if (clockwise) {
+                        cube.front[0] = leftRow;
+                        cube.right[0] = frontRow;
+                        cube.back[0] = rightRow;
+                        cube.left[0] = backRow;
+                    } else {
+                        cube.front[0] = rightRow;
+                        cube.right[0] = backRow;
+                        cube.back[0] = leftRow;
+                        cube.left[0] = frontRow;
+                    }
+                }
+
+                function rotateDown(clockwise) {
+                    const frontRow = [...cube.front[2]],
+                        rightRow = [...cube.right[2]],
+                        backRow = [...cube.back[2]],
+                        leftRow = [...cube.left[2]];
+                    if (clockwise) {
+                        cube.front[2] = leftRow;
+                        cube.right[2] = frontRow;
+                        cube.back[2] = rightRow;
+                        cube.left[2] = backRow;
+                    } else {
+                        cube.front[2] = rightRow;
+                        cube.right[2] = backRow;
+                        cube.back[2] = leftRow;
+                        cube.left[2] = frontRow;
+                    }
+                }
+
+                function rotateBack(clockwise) {
+                    const upRow = [...cube.up[0]],
+                        leftCol = cube.left.map((r) => r[0]),
+                        downRow = [...cube.down[2]],
+                        rightCol = cube.right.map((r) => r[2]);
+                    if (clockwise) {
+                        cube.up[0] = rightCol;
+                        cube.right.forEach((r, i) => (r[2] = downRow[2 - i]));
+                        cube.down[2] = leftCol;
+                        cube.left.forEach((r, i) => (r[0] = upRow[2 - i]));
+                    } else {
+                        cube.up[0] = leftCol.reverse();
+                        cube.left.forEach((r, i) => (r[0] = downRow[i]));
+                        cube.down[2] = rightCol.reverse();
+                        cube.right.forEach((r, i) => (r[2] = upRow[i]));
+                    }
+                }
+
+                function shuffle() {
+                    resetCube();
+                    move(`R`);
+                    move(`U`);
+                    move(`Rprime`);
+                    move(`Uprime`);
+                    move(`F`);
+                    move(`R`);
+                    move(`R`);
+                    move(`Dprime`);
+                    move(`L`);
+                    move(`Fprime`);
+                    move(`U`);
+                    move(`U`);
+                    move(`B`);
+                    move(`Lprime`);
+                    move(`D`);
+                    move(`F`);
+                    move(`F`);
+                    move(`Rprime`);
+                    move(`Uprime`);
+                    move(`L`);
+                    move(`L`);
+                    move(`B`);
+                    move(`B`);
+                    renderCube();
+                }
+                resetCube();
+            </script>
             <input type="text" id="answer" placeholder="Enter 'done' here when done" />
             <button onclick="checkCompletion()">Submit</button>
             <button class="hint-btn" onclick="showHint()">Hint (+1 min)</button>
@@ -84,4 +361,3 @@
         </script>
     </body>
 </html>
-
